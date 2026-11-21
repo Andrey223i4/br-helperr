@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BR Helper Mini App</title>
+    <script src="https://telegram.org"></script>
+    <style>
+        :root {
+            --bg-color: #0e1621;
+            --card-bg: #17212b;
+            --text-main: #ffffff;
+            --text-sub: #7f91a4;
+            --accent: #2b5278;
+            --accent-text: #64b5ef;
+            --border-color: #232e3c;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-main); padding: 16px 16px 90px 16px; }
+        
+        .section-title { font-size: 13px; color: var(--text-sub); margin: 16px 0 8px 12px; font-weight: 500; }
+        .card-group { background-color: var(--card-bg); border-radius: 14px; overflow: hidden; }
+        .menu-item {
+            display: flex; align-items: center; padding: 12px 14px;
+            border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.15s;
+        }
+        .menu-item:last-child { border-bottom: none; }
+        .menu-item:active { background-color: #202b36; }
+        
+        .icon-box {
+            width: 36px; height: 36px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; margin-right: 12px; flex-shrink: 0;
+        }
+        .blue { background: #1e88e5; }
+        .purple { background: #8e24aa; }
+        .green { background: #43a047; }
+        .orange { background: #fb8c00; }
+        .pink { background: #e91e63; }
+
+        .item-text { flex: 1; }
+        .item-title { font-size: 15px; font-weight: 600; color: var(--text-main); }
+        .item-sub { font-size: 12px; color: var(--text-sub); margin-top: 2px; }
+        .arrow { color: var(--text-sub); font-size: 16px; }
+
+        /* Нижнее меню */
+        .bottom-nav {
+            position: fixed; bottom: 14px; left: 50%; transform: translateX(-50%);
+            background-color: #17212b; border: 1px solid var(--border-color);
+            border-radius: 28px; display: flex; padding: 6px; gap: 6px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5); z-index: 100;
+        }
+        .nav-btn {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 8px 16px; border-radius: 22px; color: var(--text-sub);
+            font-size: 11px; cursor: pointer; border: none; background: transparent;
+        }
+        .nav-btn.active { background-color: var(--accent); color: var(--accent-text); font-weight: 600; }
+        .nav-icon { font-size: 18px; margin-bottom: 2px; }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+    </style>
+</head>
+<body>
+
+    <!-- ВКЛАДКА: ПРОЧЕЕ (Как на скриншоте) -->
+    <div id="tab-other" class="tab-content active">
+        <div class="section-title">Разделы</div>
+        <div class="card-group">
+            <div class="menu-item" onclick="openModal('Бизнесы', 'Список всех бизнесов и финка серверов')">
+                <div class="icon-box blue">🏢</div>
+                <div class="item-text">
+                    <div class="item-title">Бизнесы</div>
+                    <div class="item-sub">Список, поиск и карта бизнесов</div>
+                </div>
+                <div class="arrow">›</div>
+            </div>
+            <div class="menu-item" onclick="openModal('Крафты', 'Рецепты и предметы для крафта')">
+                <div class="icon-box purple">🔧</div>
+                <div class="item-text">
+                    <div class="item-title">Крафты</div>
+                    <div class="item-sub">Рецепты и предметы для крафта</div>
+                </div>
+                <div class="arrow">›</div>
+            </div>
+            <div class="menu-item" onclick="openModal('Калькулятор', 'Расчет заработка на работах и перекупе')">
+                <div class="icon-box blue">🧮</div>
+                <div class="item-text">
+                    <div class="item-title">Калькулятор</div>
+                    <div class="item-sub">Заработок за день, работы и перекуп</div>
+                </div>
+                <div class="arrow">›</div>
+            </div>
+        </div>
+
+        <div class="section-title">Полезное</div>
+        <div class="card-group">
+            <div class="menu-item" onclick="openModal('Финансы бизнесов', 'Прибыль и статистика')">
+                <div class="icon-box green">📈</div>
+                <div class="item-text">
+                    <div class="item-title">Финансы бизнесов</div>
+                    <div class="item-sub">Прибыль и статистика</div>
+                </div>
+                <div class="arrow">›</div>
+            </div>
+            <div class="menu-item" onclick="openModal('Напоминания', 'Уведомления о слетах и оплате')">
+                <div class="icon-box orange">🔔</div>
+                <div class="item-text">
+                    <div class="item-title">Напоминания</div>
+                    <div class="item-sub">Важные события и уведомления</div>
+                </div>
+                <div class="arrow">›</div>
+            </div>
+            <div class="menu-item" onclick="openModal('О приложении', 'Помощник по Black Russia v1.0')">
+                <div class="icon-box pink">ℹ️</div>
+                <div class="item-text">
+                    <div class="item-title">О приложении</div>
+                    <div class="item-sub">Информация и обратная связь</div>
+                </div>
+                <div class="arrow">›</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ВКЛАДКА: ТАЧКИ -->
+    <div id="tab-cars" class="tab-content">
+        <div class="section-title">Авторынок и салоны</div>
+        <div class="card-group">
+            <div class="menu-item">
+                <div class="icon-box blue">🏎️</div>
+                <div class="item-text">
+                    <div class="item-title">Высокий класс</div>
+                    <div class="item-sub">Цены, разгон, макс. скорость и прошивки</div>
+                </div>
+            </div>
+            <div class="menu-item">
+                <div class="icon-box green">🚙</div>
+                <div class="item-text">
+                    <div class="item-title">Средний и низкий класс</div>
+                    <div class="item-sub">База всех стандартных авто</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ВКЛАДКА: СКИНЫ -->
+    <div id="tab-skins" class="tab-content">
+        <div class="section-title">Каталог одежды</div>
+        <div class="card-group">
+            <div class="menu-item">
+                <div class="icon-box purple">👕</div>
+                <div class="item-text">
+                    <div class="item-title">Все скины (ID и цены)</div>
+                    <div class="item-sub">Магазин одежды, донат и эксклюзивы</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ВКЛАДКА: ДОНАТ -->
+    <div id="tab-donate" class="tab-content">
+        <div class="section-title">Сервисы и X2</div>
+        <div class="card-group">
+            <div class="menu-item">
+                <div class="icon-box orange">⭐</div>
+                <div class="item-text">
+                    <div class="item-title">Калькулятор Black Coins</div>
+                    <div class="item-sub">Перевод рублей в BC и игровую валюту</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- НИЖНЯЯ ПАНЕЛЬ НАВИГАЦИИ -->
+    <div class="bottom-nav">
+        <button class="nav-btn active" onclick="switchTab('other', this)">
+            <span class="nav-icon">🎛️</span>Прочее
+        </button>
+        <button class="nav-btn" onclick="switchTab('cars', this)">
+            <span class="nav-icon">🚗</span>Тачки
+        </button>
+        <button class="nav-btn" onclick="switchTab('skins', this)">
+            <span class="nav-icon">👕</span>Скины
+        </button>
+        <button class="nav-btn" onclick="switchTab('donate', this)">
+            <span class="nav-icon">⭐</span>Донат
+        </button>
+    </div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand(); // Разворачиваем на весь экран
+        tg.setHeaderColor('#0e1621');
+
+        function switchTab(tabId, btn) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById('tab-' + tabId).classList.add('active');
+            btn.classList.add('active');
+        }
+
+        function openModal(title, text) {
+            tg.showPopup({ title: title, message: text, buttons: [{type: 'ok'}] });
+        }
+    </script>
+</body>
+</html>
